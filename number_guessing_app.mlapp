@@ -1,0 +1,591 @@
+classdef shy_num_guess < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                        matlab.ui.Figure
+        NewGameButton                   matlab.ui.control.Button
+        LoserEditField                  matlab.ui.control.EditField
+        LoserEditFieldLabel             matlab.ui.control.Label
+        WinnerEditField                 matlab.ui.control.EditField
+        WinnerEditFieldLabel            matlab.ui.control.Label
+        SystemScoreEditField            matlab.ui.control.NumericEditField
+        vsLabel_3                       matlab.ui.control.Label
+        SystemScoreEditFieldLabel       matlab.ui.control.Label
+        UserScoreEditField              matlab.ui.control.NumericEditField
+        UserScoreEditFieldLabel         matlab.ui.control.Label
+        FinalScoresLabel                matlab.ui.control.Label
+        GamePlay_ResultsLabel           matlab.ui.control.Label
+        SystemCurrentScoreEditField     matlab.ui.control.NumericEditField
+        vsLabel_2                       matlab.ui.control.Label
+        SystemCurrentScoreEditFieldLabel  matlab.ui.control.Label
+        UserCurrentScoreEditField       matlab.ui.control.NumericEditField
+        UserCurrentScoreEditFieldLabel  matlab.ui.control.Label
+        ScoreCardLabel                  matlab.ui.control.Label
+        GamePlayPanel                   matlab.ui.container.Panel
+        vsLabel                         matlab.ui.control.Label
+        EXITViewScoreButton             matlab.ui.control.Button
+        ContinuetonextroundButton       matlab.ui.control.Button
+        SystemGuessEditField            matlab.ui.control.NumericEditField
+        UserGuessEditField              matlab.ui.control.NumericEditField
+        GuessButton                     matlab.ui.control.Button
+        WarningEditField                matlab.ui.control.EditField
+        EnteraRandomNumberSpinner       matlab.ui.control.Spinner
+        RoundEditField                  matlab.ui.control.NumericEditField
+        SystemGuessEditFieldLabel       matlab.ui.control.Label
+        UserGuessEditFieldLabel         matlab.ui.control.Label
+        ofRoundsEditField_4Label        matlab.ui.control.Label
+        WarningEditFieldLabel           matlab.ui.control.Label
+        EnteraRandomNumberSpinnerLabel  matlab.ui.control.Label
+        RoundEditFieldLabel             matlab.ui.control.Label
+        StartGameButton                 matlab.ui.control.Button
+        MaxGuessingRangeSpinner         matlab.ui.control.Spinner
+        MaxGuessingRangeSpinnerLabel    matlab.ui.control.Label
+        ofRoundsSpinner                 matlab.ui.control.Spinner
+        ofRoundsSpinnerLabel            matlab.ui.control.Label
+        UmmLetsGuessaNumLabel           matlab.ui.control.Label
+    end
+
+    
+    properties (Access = private)
+        r double;
+        m double;
+        n2=NaN;
+        n3=NaN;
+        s1=0; %double;
+        s2=0; %double;
+        j double;
+         % Description
+    end
+    
+    properties (Access = public)
+        % Description
+    end
+    
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Value changed function: ofRoundsSpinner
+        function ofRoundsSpinnerValueChanged(app, event)
+            app.r = app.ofRoundsSpinner.Value;
+            app.MaxGuessingRangeSpinnerLabel.Enable="on";
+            app.MaxGuessingRangeSpinner.Enable="on";
+            disp("max= "+app.m);
+            app.StartGameButton.Enable="on";
+        end
+
+        % Button pushed function: StartGameButton
+        function StartGameButtonPushed(app, event)
+            app.ofRoundsSpinner.Enable="off";
+            app.MaxGuessingRangeSpinner.Enable="off";
+            app.m=app.MaxGuessingRangeSpinner.Value;
+            app.StartGameButton.Enable="off";
+            app.GamePlayPanel.Enable="on";
+            app.j=1;
+            app.RoundEditFieldLabel.Enable="on";
+            app.RoundEditField.Enable="on";
+            app.RoundEditField.Value=app.j;
+            app.EnteraRandomNumberSpinnerLabel.Enable="on";
+            app.EnteraRandomNumberSpinner.Enable="on";
+        end
+
+        % Callback function: EnteraRandomNumberSpinner, GamePlayPanel
+        function EnteraRandomNumberSpinnerValueChanged(app, event)
+            app.n2=app.EnteraRandomNumberSpinner.Value;
+            app.WarningEditFieldLabel.Enable="on";
+            app.WarningEditField.Enable="on";
+           
+                app.UserGuessEditField.Enable="on";
+                app.vsLabel.Enable="on";
+                %k=app.m;
+                disp(app.n2);
+                disp(app.m);
+
+                if (app.n2<app.m)
+                    app.WarningEditFieldLabel.Enable="on";
+                    app.WarningEditField.Enable="on";
+                    app.WarningEditField.Value="None !!";
+                    app.UserGuessEditFieldLabel.Enable="on";
+                    app.UserGuessEditField.Value=app.n2;
+                    app.GuessButton.Enable="on";
+                elseif app.n2==app.m
+                    app.WarningEditFieldLabel.Enable="on";
+                    app.WarningEditField.Enable="on";
+                    app.WarningEditField.Value="None !!";
+                    app.UserGuessEditFieldLabel.Enable="on";
+                    app.UserGuessEditField.Value=app.n2;
+                    app.GuessButton.Enable="on";
+                else 
+                    app.GuessButton.Enable="off";
+                    app.UserGuessEditFieldLabel.Enable="on";
+                    app.UserGuessEditField.Value=app.n2;
+                    app.WarningEditField.Value="Enter Within Max set range !!";
+                    return;
+                end
+            
+        end
+
+        % Button pushed function: GuessButton
+        function GuessButtonPushed(app, event)
+            app.EnteraRandomNumberSpinner.Enable="off";
+            app.GuessButton.Enable="off";
+            app.n3=randi([0 app.m]);
+            app.SystemGuessEditFieldLabel.Enable="on";
+            app.SystemGuessEditField.Enable="on";
+            app.SystemGuessEditField.Value=app.n3;
+            %app.s1=0;
+            %app.s2=0;
+            if (app.n2>app.n3)
+                app.s1=app.s1+1;
+            elseif (app.n2==app.n3)
+                app.s2=app.s2+1;
+                app.s1=app.s1+1;
+                %t=t+1;
+            else
+                app.s2=app.s2+1;
+            end
+            %t=t+1;
+            app.vsLabel_2.Enable="on";
+            app.UserCurrentScoreEditField.Enable="on";
+            app.UserCurrentScoreEditField.Value=app.s1;
+            app.SystemCurrentScoreEditField.Enable="on";
+            app.SystemCurrentScoreEditField.Value=app.s2;
+            app.r=app.r-1;
+            if app.r>0
+                
+                app.ContinuetonextroundButton.Enable="on";
+                app.EXITViewScoreButton.Enable="on";
+            else
+                app.FinalScoresLabel.Enable="on";
+                app.UserScoreEditField.Enable="on";
+                app.vsLabel_3.Enable="on";
+                app.SystemScoreEditField.Enable="on";
+                app.WinnerEditField.Enable="on";
+                app.LoserEditField.Enable="on";
+                app.UserScoreEditField.Value=app.s1;
+                app.SystemScoreEditField.Value=app.s2;
+                if(app.s1>app.s2)
+                    app.WinnerEditField.Value="User";
+                    app.LoserEditField.Value="System";
+                elseif(app.s1==app.s2)
+                    app.WinnerEditField.Value="Tie";
+                    app.LoserEditField.Value="Tie";
+                else
+                    app.WinnerEditField.Value="System";
+                    app.LoserEditField.Value="User";
+                end
+                return;
+            end
+        end
+
+        % Button pushed function: ContinuetonextroundButton
+        function ContinuetonextroundButtonPushed(app, event)
+            app.ContinuetonextroundButton.Enable="off";
+            app.EXITViewScoreButton.Enable="off";
+            if(app.r>0)
+                app.j=app.j+1;
+                app.EnteraRandomNumberSpinner.Enable="on";
+            else
+                return;
+            end
+        end
+
+        % Button pushed function: EXITViewScoreButton
+        function EXITViewScoreButtonPushed(app, event)
+            app.ContinuetonextroundButton.Enable="off";
+            app.EXITViewScoreButton.Enable="off";
+            app.EnteraRandomNumberSpinner.Enable="off";
+            app.ofRoundsSpinner.Enable="off";
+            app.FinalScoresLabel.Enable="on";
+            app.UserScoreEditField.Enable="on";
+            app.vsLabel_3.Enable="on";
+            app.SystemScoreEditField.Enable="on";
+            app.WinnerEditField.Enable="on";
+            app.LoserEditField.Enable="on";
+            app.UserScoreEditField.Value=app.s1;
+            app.SystemScoreEditField.Value=app.s2;
+            if(app.s1>app.s2)
+                app.WinnerEditField.Value="User";
+                app.LoserEditField.Value="Loser";
+            elseif(app.s1==app.s2)
+                app.WinnerEditField.Value="Tie";
+                app.LoserEditField.Value="Tie";
+            else
+                app.WinnerEditField.Value="Loser";
+                app.LoserEditField.Value="User";
+            end
+            app.NewGameButton.Enable="on";
+            return;
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Color = [0.302 0.749 0.9294];
+            colormap(app.UIFigure, 'turbo');
+            app.UIFigure.Position = [100 100 647 384];
+            app.UIFigure.Name = 'MATLAB App';
+            app.UIFigure.Scrollable = 'on';
+            app.UIFigure.WindowStyle = 'modal';
+            app.UIFigure.Pointer = 'hand';
+
+            % Create UmmLetsGuessaNumLabel
+            app.UmmLetsGuessaNumLabel = uilabel(app.UIFigure);
+            app.UmmLetsGuessaNumLabel.BackgroundColor = [0 1 1];
+            app.UmmLetsGuessaNumLabel.HorizontalAlignment = 'center';
+            app.UmmLetsGuessaNumLabel.FontName = 'Comic Sans MS';
+            app.UmmLetsGuessaNumLabel.FontSize = 14;
+            app.UmmLetsGuessaNumLabel.FontWeight = 'bold';
+            app.UmmLetsGuessaNumLabel.FontAngle = 'italic';
+            app.UmmLetsGuessaNumLabel.Position = [224 348 217 30];
+            app.UmmLetsGuessaNumLabel.Text = 'Umm... Let''s Guess a Num !!';
+
+            % Create ofRoundsSpinnerLabel
+            app.ofRoundsSpinnerLabel = uilabel(app.UIFigure);
+            app.ofRoundsSpinnerLabel.HorizontalAlignment = 'right';
+            app.ofRoundsSpinnerLabel.Position = [106 317 76 22];
+            app.ofRoundsSpinnerLabel.Text = '# of Rounds :';
+
+            % Create ofRoundsSpinner
+            app.ofRoundsSpinner = uispinner(app.UIFigure);
+            app.ofRoundsSpinner.Limits = [1 Inf];
+            app.ofRoundsSpinner.RoundFractionalValues = 'on';
+            app.ofRoundsSpinner.ValueChangedFcn = createCallbackFcn(app, @ofRoundsSpinnerValueChanged, true);
+            app.ofRoundsSpinner.Placeholder = 'r>0';
+            app.ofRoundsSpinner.Position = [197 318 45 22];
+            app.ofRoundsSpinner.Value = 1;
+
+            % Create MaxGuessingRangeSpinnerLabel
+            app.MaxGuessingRangeSpinnerLabel = uilabel(app.UIFigure);
+            app.MaxGuessingRangeSpinnerLabel.HorizontalAlignment = 'right';
+            app.MaxGuessingRangeSpinnerLabel.Enable = 'off';
+            app.MaxGuessingRangeSpinnerLabel.Position = [76 287 124 22];
+            app.MaxGuessingRangeSpinnerLabel.Text = 'Max Guessing Range:';
+
+            % Create MaxGuessingRangeSpinner
+            app.MaxGuessingRangeSpinner = uispinner(app.UIFigure);
+            app.MaxGuessingRangeSpinner.Limits = [1 Inf];
+            app.MaxGuessingRangeSpinner.RoundFractionalValues = 'on';
+            app.MaxGuessingRangeSpinner.Enable = 'off';
+            app.MaxGuessingRangeSpinner.Placeholder = '+ve';
+            app.MaxGuessingRangeSpinner.Position = [215 288 46 22];
+            app.MaxGuessingRangeSpinner.Value = 1;
+
+            % Create StartGameButton
+            app.StartGameButton = uibutton(app.UIFigure, 'push');
+            app.StartGameButton.ButtonPushedFcn = createCallbackFcn(app, @StartGameButtonPushed, true);
+            app.StartGameButton.BackgroundColor = [1 0.4118 0.1608];
+            app.StartGameButton.FontWeight = 'bold';
+            app.StartGameButton.FontColor = [1 1 1];
+            app.StartGameButton.Enable = 'off';
+            app.StartGameButton.Position = [119 260 99 22];
+            app.StartGameButton.Text = 'Start Game';
+
+            % Create GamePlayPanel
+            app.GamePlayPanel = uipanel(app.UIFigure);
+            app.GamePlayPanel.Enable = 'off';
+            app.GamePlayPanel.TitlePosition = 'centertop';
+            app.GamePlayPanel.Title = '-----<GamePlay>-----';
+            app.GamePlayPanel.SizeChangedFcn = createCallbackFcn(app, @EnteraRandomNumberSpinnerValueChanged, true);
+            app.GamePlayPanel.Position = [21 53 293 198];
+
+            % Create RoundEditFieldLabel
+            app.RoundEditFieldLabel = uilabel(app.GamePlayPanel);
+            app.RoundEditFieldLabel.BackgroundColor = [0 1 1];
+            app.RoundEditFieldLabel.HorizontalAlignment = 'right';
+            app.RoundEditFieldLabel.FontWeight = 'bold';
+            app.RoundEditFieldLabel.Enable = 'off';
+            app.RoundEditFieldLabel.Position = [88 150 60 22];
+            app.RoundEditFieldLabel.Text = 'Round # :';
+
+            % Create EnteraRandomNumberSpinnerLabel
+            app.EnteraRandomNumberSpinnerLabel = uilabel(app.GamePlayPanel);
+            app.EnteraRandomNumberSpinnerLabel.BackgroundColor = [1 1 0];
+            app.EnteraRandomNumberSpinnerLabel.HorizontalAlignment = 'right';
+            app.EnteraRandomNumberSpinnerLabel.FontWeight = 'bold';
+            app.EnteraRandomNumberSpinnerLabel.Enable = 'off';
+            app.EnteraRandomNumberSpinnerLabel.Position = [37 125 153 22];
+            app.EnteraRandomNumberSpinnerLabel.Text = 'Enter a Random Number :';
+
+            % Create WarningEditFieldLabel
+            app.WarningEditFieldLabel = uilabel(app.GamePlayPanel);
+            app.WarningEditFieldLabel.BackgroundColor = [0.851 0.3255 0.098];
+            app.WarningEditFieldLabel.HorizontalAlignment = 'right';
+            app.WarningEditFieldLabel.FontWeight = 'bold';
+            app.WarningEditFieldLabel.Enable = 'off';
+            app.WarningEditFieldLabel.Position = [20 100 60 22];
+            app.WarningEditFieldLabel.Text = 'Warning :';
+
+            % Create ofRoundsEditField_4Label
+            app.ofRoundsEditField_4Label = uilabel(app.GamePlayPanel);
+            app.ofRoundsEditField_4Label.HorizontalAlignment = 'right';
+            app.ofRoundsEditField_4Label.Enable = 'off';
+            app.ofRoundsEditField_4Label.Position = [107 74 52 22];
+            app.ofRoundsEditField_4Label.Text = 'System :';
+
+            % Create UserGuessEditFieldLabel
+            app.UserGuessEditFieldLabel = uilabel(app.GamePlayPanel);
+            app.UserGuessEditFieldLabel.BackgroundColor = [0 1 1];
+            app.UserGuessEditFieldLabel.HorizontalAlignment = 'right';
+            app.UserGuessEditFieldLabel.WordWrap = 'on';
+            app.UserGuessEditFieldLabel.Enable = 'off';
+            app.UserGuessEditFieldLabel.Position = [38 38 52 33];
+            app.UserGuessEditFieldLabel.Text = 'User Guess  :';
+
+            % Create SystemGuessEditFieldLabel
+            app.SystemGuessEditFieldLabel = uilabel(app.GamePlayPanel);
+            app.SystemGuessEditFieldLabel.BackgroundColor = [0.302 0.7451 0.9333];
+            app.SystemGuessEditFieldLabel.HorizontalAlignment = 'right';
+            app.SystemGuessEditFieldLabel.WordWrap = 'on';
+            app.SystemGuessEditFieldLabel.Enable = 'off';
+            app.SystemGuessEditFieldLabel.Position = [161 38 65 33];
+            app.SystemGuessEditFieldLabel.Text = 'System Guess:';
+
+            % Create RoundEditField
+            app.RoundEditField = uieditfield(app.GamePlayPanel, 'numeric');
+            app.RoundEditField.AllowEmpty = 'on';
+            app.RoundEditField.Editable = 'off';
+            app.RoundEditField.FontWeight = 'bold';
+            app.RoundEditField.BackgroundColor = [0 1 1];
+            app.RoundEditField.Enable = 'off';
+            app.RoundEditField.Position = [163 149 43 23];
+            app.RoundEditField.Value = [];
+
+            % Create EnteraRandomNumberSpinner
+            app.EnteraRandomNumberSpinner = uispinner(app.GamePlayPanel);
+            app.EnteraRandomNumberSpinner.Limits = [0 Inf];
+            app.EnteraRandomNumberSpinner.RoundFractionalValues = 'on';
+            app.EnteraRandomNumberSpinner.ValueChangedFcn = createCallbackFcn(app, @EnteraRandomNumberSpinnerValueChanged, true);
+            app.EnteraRandomNumberSpinner.FontWeight = 'bold';
+            app.EnteraRandomNumberSpinner.BackgroundColor = [1 1 0];
+            app.EnteraRandomNumberSpinner.Enable = 'off';
+            app.EnteraRandomNumberSpinner.Placeholder = '+ve no.';
+            app.EnteraRandomNumberSpinner.Position = [205 126 47 22];
+
+            % Create WarningEditField
+            app.WarningEditField = uieditfield(app.GamePlayPanel, 'text');
+            app.WarningEditField.Editable = 'off';
+            app.WarningEditField.FontWeight = 'bold';
+            app.WarningEditField.BackgroundColor = [0.851 0.3255 0.098];
+            app.WarningEditField.Enable = 'off';
+            app.WarningEditField.Position = [95 98 177 22];
+
+            % Create GuessButton
+            app.GuessButton = uibutton(app.GamePlayPanel, 'push');
+            app.GuessButton.ButtonPushedFcn = createCallbackFcn(app, @GuessButtonPushed, true);
+            app.GuessButton.BackgroundColor = [1 1 0];
+            app.GuessButton.FontWeight = 'bold';
+            app.GuessButton.FontColor = [0 0 1];
+            app.GuessButton.Enable = 'off';
+            app.GuessButton.Position = [169 73 65 22];
+            app.GuessButton.Text = 'Guess';
+
+            % Create UserGuessEditField
+            app.UserGuessEditField = uieditfield(app.GamePlayPanel, 'numeric');
+            app.UserGuessEditField.Editable = 'off';
+            app.UserGuessEditField.BackgroundColor = [0 1 1];
+            app.UserGuessEditField.Enable = 'off';
+            app.UserGuessEditField.Position = [103 48 24 23];
+
+            % Create SystemGuessEditField
+            app.SystemGuessEditField = uieditfield(app.GamePlayPanel, 'numeric');
+            app.SystemGuessEditField.Editable = 'off';
+            app.SystemGuessEditField.BackgroundColor = [0.302 0.7451 0.9333];
+            app.SystemGuessEditField.Enable = 'off';
+            app.SystemGuessEditField.Position = [234 48 29 23];
+
+            % Create ContinuetonextroundButton
+            app.ContinuetonextroundButton = uibutton(app.GamePlayPanel, 'push');
+            app.ContinuetonextroundButton.ButtonPushedFcn = createCallbackFcn(app, @ContinuetonextroundButtonPushed, true);
+            app.ContinuetonextroundButton.BackgroundColor = [0.3922 0.8314 0.0745];
+            app.ContinuetonextroundButton.FontWeight = 'bold';
+            app.ContinuetonextroundButton.FontColor = [1 1 1];
+            app.ContinuetonextroundButton.Enable = 'off';
+            app.ContinuetonextroundButton.Position = [12 9 147 22];
+            app.ContinuetonextroundButton.Text = 'Continue to next round';
+
+            % Create EXITViewScoreButton
+            app.EXITViewScoreButton = uibutton(app.GamePlayPanel, 'push');
+            app.EXITViewScoreButton.ButtonPushedFcn = createCallbackFcn(app, @EXITViewScoreButtonPushed, true);
+            app.EXITViewScoreButton.BackgroundColor = [0 0 0];
+            app.EXITViewScoreButton.FontWeight = 'bold';
+            app.EXITViewScoreButton.FontColor = [1 1 1];
+            app.EXITViewScoreButton.Enable = 'off';
+            app.EXITViewScoreButton.Position = [164 9 120 22];
+            app.EXITViewScoreButton.Text = 'EXIT & View Score';
+
+            % Create vsLabel
+            app.vsLabel = uilabel(app.GamePlayPanel);
+            app.vsLabel.Enable = 'off';
+            app.vsLabel.Position = [142 50 20 22];
+            app.vsLabel.Text = 'v/s';
+
+            % Create ScoreCardLabel
+            app.ScoreCardLabel = uilabel(app.UIFigure);
+            app.ScoreCardLabel.Position = [440 308 112 28];
+            app.ScoreCardLabel.Text = '-----<ScoreCard>-----';
+
+            % Create UserCurrentScoreEditFieldLabel
+            app.UserCurrentScoreEditFieldLabel = uilabel(app.UIFigure);
+            app.UserCurrentScoreEditFieldLabel.HorizontalAlignment = 'right';
+            app.UserCurrentScoreEditFieldLabel.WordWrap = 'on';
+            app.UserCurrentScoreEditFieldLabel.Enable = 'off';
+            app.UserCurrentScoreEditFieldLabel.Position = [371 249 69 44];
+            app.UserCurrentScoreEditFieldLabel.Text = 'User  Current Score:';
+
+            % Create UserCurrentScoreEditField
+            app.UserCurrentScoreEditField = uieditfield(app.UIFigure, 'numeric');
+            app.UserCurrentScoreEditField.AllowEmpty = 'on';
+            app.UserCurrentScoreEditField.Editable = 'off';
+            app.UserCurrentScoreEditField.Enable = 'off';
+            app.UserCurrentScoreEditField.Position = [455 270 24 23];
+
+            % Create SystemCurrentScoreEditFieldLabel
+            app.SystemCurrentScoreEditFieldLabel = uilabel(app.UIFigure);
+            app.SystemCurrentScoreEditFieldLabel.HorizontalAlignment = 'right';
+            app.SystemCurrentScoreEditFieldLabel.WordWrap = 'on';
+            app.SystemCurrentScoreEditFieldLabel.Enable = 'off';
+            app.SystemCurrentScoreEditFieldLabel.Position = [512 250 69 44];
+            app.SystemCurrentScoreEditFieldLabel.Text = 'System Current Score:';
+
+            % Create vsLabel_2
+            app.vsLabel_2 = uilabel(app.UIFigure);
+            app.vsLabel_2.Enable = 'off';
+            app.vsLabel_2.Position = [499 272 20 22];
+            app.vsLabel_2.Text = 'v/s';
+
+            % Create SystemCurrentScoreEditField
+            app.SystemCurrentScoreEditField = uieditfield(app.UIFigure, 'numeric');
+            app.SystemCurrentScoreEditField.AllowEmpty = 'on';
+            app.SystemCurrentScoreEditField.Editable = 'off';
+            app.SystemCurrentScoreEditField.Enable = 'off';
+            app.SystemCurrentScoreEditField.Position = [596 271 24 23];
+
+            % Create GamePlay_ResultsLabel
+            app.GamePlay_ResultsLabel = uilabel(app.UIFigure);
+            app.GamePlay_ResultsLabel.Position = [420 201 162 28];
+            app.GamePlay_ResultsLabel.Text = '-----<GamePlay_Results>-----';
+
+            % Create FinalScoresLabel
+            app.FinalScoresLabel = uilabel(app.UIFigure);
+            app.FinalScoresLabel.Enable = 'off';
+            app.FinalScoresLabel.Position = [465 163 83 28];
+            app.FinalScoresLabel.Text = 'Final Scores...';
+
+            % Create UserScoreEditFieldLabel
+            app.UserScoreEditFieldLabel = uilabel(app.UIFigure);
+            app.UserScoreEditFieldLabel.HorizontalAlignment = 'right';
+            app.UserScoreEditFieldLabel.WordWrap = 'on';
+            app.UserScoreEditFieldLabel.Enable = 'off';
+            app.UserScoreEditFieldLabel.Position = [397 138 40 30];
+            app.UserScoreEditFieldLabel.Text = 'User  Score:';
+
+            % Create UserScoreEditField
+            app.UserScoreEditField = uieditfield(app.UIFigure, 'numeric');
+            app.UserScoreEditField.AllowEmpty = 'on';
+            app.UserScoreEditField.Editable = 'off';
+            app.UserScoreEditField.Enable = 'off';
+            app.UserScoreEditField.Position = [452 145 24 23];
+            app.UserScoreEditField.Value = 1;
+
+            % Create SystemScoreEditFieldLabel
+            app.SystemScoreEditFieldLabel = uilabel(app.UIFigure);
+            app.SystemScoreEditFieldLabel.HorizontalAlignment = 'right';
+            app.SystemScoreEditFieldLabel.WordWrap = 'on';
+            app.SystemScoreEditFieldLabel.Enable = 'off';
+            app.SystemScoreEditFieldLabel.Position = [518 138 40 30];
+            app.SystemScoreEditFieldLabel.Text = 'System  Score:';
+
+            % Create vsLabel_3
+            app.vsLabel_3 = uilabel(app.UIFigure);
+            app.vsLabel_3.Enable = 'off';
+            app.vsLabel_3.Position = [487 147 20 22];
+            app.vsLabel_3.Text = 'v/s';
+
+            % Create SystemScoreEditField
+            app.SystemScoreEditField = uieditfield(app.UIFigure, 'numeric');
+            app.SystemScoreEditField.AllowEmpty = 'on';
+            app.SystemScoreEditField.Editable = 'off';
+            app.SystemScoreEditField.Enable = 'off';
+            app.SystemScoreEditField.Position = [567 145 24 23];
+
+            % Create WinnerEditFieldLabel
+            app.WinnerEditFieldLabel = uilabel(app.UIFigure);
+            app.WinnerEditFieldLabel.HorizontalAlignment = 'right';
+            app.WinnerEditFieldLabel.Enable = 'off';
+            app.WinnerEditFieldLabel.Position = [431 107 43 22];
+            app.WinnerEditFieldLabel.Text = 'Winner';
+
+            % Create WinnerEditField
+            app.WinnerEditField = uieditfield(app.UIFigure, 'text');
+            app.WinnerEditField.Editable = 'off';
+            app.WinnerEditField.Enable = 'off';
+            app.WinnerEditField.Position = [489 101 78 33];
+
+            % Create LoserEditFieldLabel
+            app.LoserEditFieldLabel = uilabel(app.UIFigure);
+            app.LoserEditFieldLabel.HorizontalAlignment = 'right';
+            app.LoserEditFieldLabel.Enable = 'off';
+            app.LoserEditFieldLabel.Position = [440 68 35 22];
+            app.LoserEditFieldLabel.Text = 'Loser';
+
+            % Create LoserEditField
+            app.LoserEditField = uieditfield(app.UIFigure, 'text');
+            app.LoserEditField.Editable = 'off';
+            app.LoserEditField.Enable = 'off';
+            app.LoserEditField.Position = [490 63 77 33];
+
+            % Create NewGameButton
+            app.NewGameButton = uibutton(app.UIFigure, 'push');
+            app.NewGameButton.Enable = 'off';
+            app.NewGameButton.Position = [292 12 90 34];
+            app.NewGameButton.Text = 'New Game';
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = shy_num_guess
+
+            runningApp = getRunningApp(app);
+
+            % Check for running singleton app
+            if isempty(runningApp)
+
+                % Create UIFigure and components
+                createComponents(app)
+
+                % Register the app with App Designer
+                registerApp(app, app.UIFigure)
+            else
+
+                % Focus the running singleton app
+                figure(runningApp.UIFigure)
+
+                app = runningApp;
+            end
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end

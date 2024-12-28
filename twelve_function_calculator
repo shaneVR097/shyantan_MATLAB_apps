@@ -1,0 +1,566 @@
+classdef shy_num_calc < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                     matlab.ui.Figure
+        ACalculatingCalculatorLabel  matlab.ui.control.Label
+        FactorialnButton             matlab.ui.control.Button
+        nButton                      matlab.ui.control.Button
+        nCrButton                    matlab.ui.control.Button
+        nPrButton                    matlab.ui.control.Button
+        log_10Button                 matlab.ui.control.Button
+        xButton                      matlab.ui.control.Button
+        RootButton                   matlab.ui.control.Button
+        PowerButton                  matlab.ui.control.Button
+        Button                       matlab.ui.control.Button
+        ResultEditField              matlab.ui.control.EditField
+        ResultEditFieldLabel         matlab.ui.control.Label
+        EnterNumberEditField         matlab.ui.control.NumericEditField
+        AddButton                    matlab.ui.control.Button
+        SubtractButton               matlab.ui.control.Button
+        MultiplyxButton              matlab.ui.control.Button
+        DivideButton                 matlab.ui.control.Button
+        CLRButton                    matlab.ui.control.Button
+        EnterNumberEditFieldLabel    matlab.ui.control.Label
+    end
+
+    
+    properties (Access = private)
+        c=0;
+        n1=0;
+        n2=0;
+        n3=0;
+        r=0;
+        s=" = ";
+        f=0;
+        op=0;
+        % Description
+    end
+    
+    methods (Access = private)
+        
+        function mathsop(app)
+            if app.op==1
+                app.r=app.n3+app.n1;
+                app.s=app.n3+" + "+app.n1+" = "+app.r;
+                app.n3=app.r;
+            elseif app.op==2
+                app.r=app.n3-app.n1;
+                app.s=app.n3+" - "+app.n1+" = "+app.r;
+                app.n3=app.r;
+            elseif app.op==3
+                app.r=app.n3*app.n1;
+                app.s=app.n3+" * "+app.n1+" = "+app.r;
+                app.n3=app.r;
+            elseif app.op==4
+                app.r=app.n3/app.n1;
+                app.s=app.n3+" / "+app.n1+" = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==5
+                app.r=app.n3.^app.n1;
+                app.s=app.n3+"^( "+app.n1+" ) = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==6
+                app.r=app.n3.^(1/app.n1);
+                app.s="( "+app.n3+" )^( 1/"+app.n1+" ) = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==7
+                app.r=log10(app.n3);
+                app.s="log_10( "+app.n3+" ) = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==8
+                app.r=10^app.n3;
+                app.s="10^( "+app.n3+" ) = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==9
+                app.r=(factorial(round(app.n3))/factorial(round(app.n3-app.n1)));
+                app.s=app.n3+"P"+app.n1+" = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==10
+                app.r=(factorial(round(app.n3))/(factorial(round(app.n3-app.n1))*factorial(round(app.n1))));
+                app.s=round(app.n3)+"C"+round(app.n1)+" = "+round(app.r,2);
+                app.n3=app.r;
+            elseif app.op==11
+                app.r=(1/app.n3);
+                app.s="1/( "+app.n3+" ) = "+app.r;
+                %app.n3=app.r;
+            elseif app.op==12
+                app.r=factorial(round(app.n3));
+                app.s="( "+round(app.n3)+" )! = "+round(app.r,2);
+            end
+            %app.EnterNumberEditField.Editable="off";
+        end
+    end
+    
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Value changed function: EnterNumberEditField
+        function EnterNumberEditFieldValueChanged(app, event)
+            app.c= app.EnterNumberEditField.Value;
+            if isempty(app.c) || ~isnumeric(app.c)
+                % Display an error message
+                uialert(app.UIFigure, 'Please enter a valid numeric value 1,-4,0.7...', 'Input Error', 'Icon', 'error');
+                % Reset the edit field
+                app.EnterNumberEditField.Value = [];
+                %app.AddButton.Enable="off";
+                set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+                return;
+            else
+                app.n1=app.EnterNumberEditField.Value;
+                
+                if app.f==0 || app.op==0
+                    app.s=" = "+app.n1;
+                    app.ResultEditField.Value=app.s;
+                    set(findobj(app.UIFigure,'Type','uibutton'),'Enable','on');
+                    app.f=1;
+                    app.Button.Enable="off";
+                else
+                    if app.op==9 || app.op==10 || app.op==12
+                        app.n1=round(app.n1);
+                    end
+                    app.ResultEditField.Value=app.s+app.n1;
+                    set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+                    app.Button.Enable="on";
+                end
+            end
+        end
+
+        % Button pushed function: CLRButton
+        function CLRButtonPushed(app, event)
+            app.ResultEditField.Value="= 0";
+            app.EnterNumberEditField.Value =0;
+            app.n1=0;
+            app.n2=0;
+            app.n3=0;
+            app.r=0;
+            app.f=0;
+            app.op=0;
+            app.s=" = 0";
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+        end
+
+        % Button pushed function: AddButton
+        function AddButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=1;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+" + ";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: SubtractButton
+        function SubtractButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=2;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+" - ";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: MultiplyxButton
+        function MultiplyxButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=3;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+" * ";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: DivideButton
+        function DivideButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=4;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+" / ";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: PowerButton
+        function PowerButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=5;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+"^";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: RootButton
+        function RootButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=6;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = ("+app.n3+")^1/";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: log_10Button
+        function log_10ButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=7;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = log_10("+app.n3+")";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.EnterNumberEditField.Enable="off";
+            app.CLRButton.Enable="on";
+            app.Button.Enable="on";
+        end
+
+        % Button pushed function: xButton
+        function xButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=8;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = 10^( "+app.n3+" )";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.EnterNumberEditField.Enable="off";
+            app.CLRButton.Enable="on";
+            app.Button.Enable="on";
+        end
+
+        % Button pushed function: nPrButton
+        function nPrButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=9;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+app.n3+"P";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: nCrButton
+        function nCrButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=10;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = "+round(app.n3)+"C";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.CLRButton.Enable="on";
+        end
+
+        % Button pushed function: nButton
+        function nButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=11;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = 1/("+app.n3+")";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.EnterNumberEditField.Enable="off";
+            app.CLRButton.Enable="on";
+            app.Button.Enable="on";
+        end
+
+        % Button pushed function: FactorialnButton
+        function FactorialnButtonPushed(app, event)
+            app.n2=app.n1;
+            app.n1=0;
+            app.op=12;
+            if app.f==1
+                app.n3=app.n2;
+            elseif app.f==2
+                app.n3=app.r;
+            end
+            app.s=" = ( "+app.n3+" )!";
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','off');
+            app.EnterNumberEditField.Enable="off";
+            app.CLRButton.Enable="on";
+            app.Button.Enable="on";
+        end
+
+        % Button pushed function: Button
+        function ButtonPushed(app, event)
+            app.mathsop;
+            app.n3=app.r;
+            app.f=2;
+            app.ResultEditField.Value=app.s;
+            set(findobj(app.UIFigure,'Type','uibutton'),'Enable','on');
+            app.EnterNumberEditField.Enable="on";
+            app.CLRButton.Enable="on";
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Color = [0 0.4471 0.7412];
+            app.UIFigure.Position = [100 100 271 436];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create EnterNumberEditFieldLabel
+            app.EnterNumberEditFieldLabel = uilabel(app.UIFigure);
+            app.EnterNumberEditFieldLabel.HorizontalAlignment = 'right';
+            app.EnterNumberEditFieldLabel.FontWeight = 'bold';
+            app.EnterNumberEditFieldLabel.FontColor = [1 1 1];
+            app.EnterNumberEditFieldLabel.Position = [13 278 84 22];
+            app.EnterNumberEditFieldLabel.Text = 'Enter Number';
+
+            % Create CLRButton
+            app.CLRButton = uibutton(app.UIFigure, 'push');
+            app.CLRButton.ButtonPushedFcn = createCallbackFcn(app, @CLRButtonPushed, true);
+            app.CLRButton.BackgroundColor = [0 0 0];
+            app.CLRButton.FontSize = 14;
+            app.CLRButton.FontWeight = 'bold';
+            app.CLRButton.FontColor = [1 1 1];
+            app.CLRButton.Position = [14 238 100 25];
+            app.CLRButton.Text = 'CLR';
+
+            % Create DivideButton
+            app.DivideButton = uibutton(app.UIFigure, 'push');
+            app.DivideButton.ButtonPushedFcn = createCallbackFcn(app, @DivideButtonPushed, true);
+            app.DivideButton.BackgroundColor = [0.4667 0.6745 0.1882];
+            app.DivideButton.FontWeight = 'bold';
+            app.DivideButton.FontColor = [1 1 1];
+            app.DivideButton.Position = [166 162 80 29];
+            app.DivideButton.Text = 'Divide ÷';
+
+            % Create MultiplyxButton
+            app.MultiplyxButton = uibutton(app.UIFigure, 'push');
+            app.MultiplyxButton.ButtonPushedFcn = createCallbackFcn(app, @MultiplyxButtonPushed, true);
+            app.MultiplyxButton.BackgroundColor = [0.4667 0.6745 0.1882];
+            app.MultiplyxButton.FontWeight = 'bold';
+            app.MultiplyxButton.FontColor = [1 1 1];
+            app.MultiplyxButton.Position = [24 162 80 29];
+            app.MultiplyxButton.Text = 'Multiply x';
+
+            % Create SubtractButton
+            app.SubtractButton = uibutton(app.UIFigure, 'push');
+            app.SubtractButton.ButtonPushedFcn = createCallbackFcn(app, @SubtractButtonPushed, true);
+            app.SubtractButton.BackgroundColor = [0.4667 0.6745 0.1882];
+            app.SubtractButton.FontWeight = 'bold';
+            app.SubtractButton.FontColor = [1 1 1];
+            app.SubtractButton.Position = [166 199 80 29];
+            app.SubtractButton.Text = 'Subtract -';
+
+            % Create AddButton
+            app.AddButton = uibutton(app.UIFigure, 'push');
+            app.AddButton.ButtonPushedFcn = createCallbackFcn(app, @AddButtonPushed, true);
+            app.AddButton.BackgroundColor = [0.4667 0.6745 0.1882];
+            app.AddButton.FontWeight = 'bold';
+            app.AddButton.FontColor = [1 1 1];
+            app.AddButton.Position = [24 199 80 29];
+            app.AddButton.Text = 'Add +';
+
+            % Create EnterNumberEditField
+            app.EnterNumberEditField = uieditfield(app.UIFigure, 'numeric');
+            app.EnterNumberEditField.ValueChangedFcn = createCallbackFcn(app, @EnterNumberEditFieldValueChanged, true);
+            app.EnterNumberEditField.FontWeight = 'bold';
+            app.EnterNumberEditField.Position = [106 278 152 22];
+
+            % Create ResultEditFieldLabel
+            app.ResultEditFieldLabel = uilabel(app.UIFigure);
+            app.ResultEditFieldLabel.HorizontalAlignment = 'right';
+            app.ResultEditFieldLabel.FontWeight = 'bold';
+            app.ResultEditFieldLabel.FontColor = [1 1 1];
+            app.ResultEditFieldLabel.Position = [14 378 42 22];
+            app.ResultEditFieldLabel.Text = 'Result';
+
+            % Create ResultEditField
+            app.ResultEditField = uieditfield(app.UIFigure, 'text');
+            app.ResultEditField.Editable = 'off';
+            app.ResultEditField.FontSize = 14;
+            app.ResultEditField.FontWeight = 'bold';
+            app.ResultEditField.FontColor = [0 0 1];
+            app.ResultEditField.Position = [22 319 236 52];
+            app.ResultEditField.Value = '= 0';
+
+            % Create Button
+            app.Button = uibutton(app.UIFigure, 'push');
+            app.Button.ButtonPushedFcn = createCallbackFcn(app, @ButtonPushed, true);
+            app.Button.BackgroundColor = [0 0 1];
+            app.Button.FontSize = 18;
+            app.Button.FontWeight = 'bold';
+            app.Button.FontColor = [1 1 1];
+            app.Button.Enable = 'off';
+            app.Button.Position = [156 236 100 30];
+            app.Button.Text = '=';
+
+            % Create PowerButton
+            app.PowerButton = uibutton(app.UIFigure, 'push');
+            app.PowerButton.ButtonPushedFcn = createCallbackFcn(app, @PowerButtonPushed, true);
+            app.PowerButton.BackgroundColor = [0.7176 0.2745 1];
+            app.PowerButton.FontWeight = 'bold';
+            app.PowerButton.FontColor = [1 1 1];
+            app.PowerButton.Position = [24 89 80 29];
+            app.PowerButton.Text = 'Power ^';
+
+            % Create RootButton
+            app.RootButton = uibutton(app.UIFigure, 'push');
+            app.RootButton.ButtonPushedFcn = createCallbackFcn(app, @RootButtonPushed, true);
+            app.RootButton.BackgroundColor = [0.7176 0.2745 1];
+            app.RootButton.FontWeight = 'bold';
+            app.RootButton.FontColor = [1 1 1];
+            app.RootButton.Position = [166 89 80 29];
+            app.RootButton.Text = 'Root √';
+
+            % Create xButton
+            app.xButton = uibutton(app.UIFigure, 'push');
+            app.xButton.ButtonPushedFcn = createCallbackFcn(app, @xButtonPushed, true);
+            app.xButton.BackgroundColor = [0.851 0.3255 0.098];
+            app.xButton.FontWeight = 'bold';
+            app.xButton.FontColor = [1 1 1];
+            app.xButton.Position = [166 50 80 29];
+            app.xButton.Text = '10^x';
+
+            % Create log_10Button
+            app.log_10Button = uibutton(app.UIFigure, 'push');
+            app.log_10Button.ButtonPushedFcn = createCallbackFcn(app, @log_10ButtonPushed, true);
+            app.log_10Button.BackgroundColor = [0.851 0.3255 0.098];
+            app.log_10Button.FontWeight = 'bold';
+            app.log_10Button.FontColor = [1 1 1];
+            app.log_10Button.Position = [24 50 80 29];
+            app.log_10Button.Text = 'log_10';
+
+            % Create nPrButton
+            app.nPrButton = uibutton(app.UIFigure, 'push');
+            app.nPrButton.ButtonPushedFcn = createCallbackFcn(app, @nPrButtonPushed, true);
+            app.nPrButton.BackgroundColor = [0.851 0.3255 0.098];
+            app.nPrButton.FontWeight = 'bold';
+            app.nPrButton.FontColor = [1 1 1];
+            app.nPrButton.Position = [24 12 80 29];
+            app.nPrButton.Text = 'nPr';
+
+            % Create nCrButton
+            app.nCrButton = uibutton(app.UIFigure, 'push');
+            app.nCrButton.ButtonPushedFcn = createCallbackFcn(app, @nCrButtonPushed, true);
+            app.nCrButton.BackgroundColor = [0.851 0.3255 0.098];
+            app.nCrButton.FontWeight = 'bold';
+            app.nCrButton.FontColor = [1 1 1];
+            app.nCrButton.Position = [166 12 80 29];
+            app.nCrButton.Text = 'nCr';
+
+            % Create nButton
+            app.nButton = uibutton(app.UIFigure, 'push');
+            app.nButton.ButtonPushedFcn = createCallbackFcn(app, @nButtonPushed, true);
+            app.nButton.BackgroundColor = [0.7176 0.2745 1];
+            app.nButton.FontWeight = 'bold';
+            app.nButton.FontColor = [1 1 1];
+            app.nButton.Position = [24 126 80 29];
+            app.nButton.Text = '1/n';
+
+            % Create FactorialnButton
+            app.FactorialnButton = uibutton(app.UIFigure, 'push');
+            app.FactorialnButton.ButtonPushedFcn = createCallbackFcn(app, @FactorialnButtonPushed, true);
+            app.FactorialnButton.BackgroundColor = [0.7176 0.2745 1];
+            app.FactorialnButton.FontWeight = 'bold';
+            app.FactorialnButton.FontColor = [1 1 1];
+            app.FactorialnButton.Position = [166 126 80 29];
+            app.FactorialnButton.Text = 'Factorial n!';
+
+            % Create ACalculatingCalculatorLabel
+            app.ACalculatingCalculatorLabel = uilabel(app.UIFigure);
+            app.ACalculatingCalculatorLabel.BackgroundColor = [0.0745 0.6235 1];
+            app.ACalculatingCalculatorLabel.HorizontalAlignment = 'center';
+            app.ACalculatingCalculatorLabel.FontWeight = 'bold';
+            app.ACalculatingCalculatorLabel.FontColor = [1 1 1];
+            app.ACalculatingCalculatorLabel.Position = [57 403 166 23];
+            app.ACalculatingCalculatorLabel.Text = 'A Calculating Calculator ;)';
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = shy_num_calc
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end

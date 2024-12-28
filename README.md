@@ -9,6 +9,7 @@ Features:
 Adjustable difficulty levels.
 Customizable number ranges.
 Score tracking for competitive fun.
+
 2. 12-Function Calculator
 Description: A versatile calculator app offering essential and advanced functions for quick computations.
 
